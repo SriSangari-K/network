@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Dashboard')}"></head>
+<body>
+
+    <!-- Top Navigation -->
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+    <!-- Flash Alerts -->
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <!-- Main Dashboard Container -->
+    <div class="container-fluid px-4 py-4">
+        
+        <!-- Header Banner -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-2 border-bottom">
+            <div>
+                <h2 class="fw-bold text-dark mb-1">Network Administration Dashboard</h2>
+                <p class="text-muted mb-0">Overview of campus infrastructure, laboratory subnets, and active IP allocations</p>
+            </div>
+            <div class="mt-3 mt-md-0 d-flex gap-2">
+                <a th:href="@{/devices/new}" class="btn btn-primary">+ Register Device</a>
+                <a th:href="@{/ip-management}" class="btn btn-outline-secondary">IP Status Checker</a>
+            </div>
+        </div>
+
+        <!-- Infrastructure Metrics Grid -->
+        <div class="row g-3 mb-4">
+            
+            <!-- Metric 1: Colleges -->
+            <div class="col-12 col-sm-6 col-xl-2">
+                <div class="card metric-card p-3 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="metric-label">Colleges</span>
+                        <div class="metric-icon bg-primary text-white">🏛️</div>
+                    </div>
+                    <div class="metric-number" th:text="${collegeCount}">0</div>
+                    <div class="small text-muted mt-2">
+                        <a th:href="@{/colleges}" class="text-decoration-none">Manage Colleges &rarr;</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metric 2: Departments -->
+            <div class="col-12 col-sm-6 col-xl-2">
+                <div class="card metric-card p-3 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="metric-label">Departments</span>
+                        <div class="metric-icon bg-info text-dark">🏢</div>
+                    </div>
+                    <div class="metric-number" th:text="${departmentCount}">0</div>
+                    <div class="small text-muted mt-2">
+                        <a th:href="@{/departments}" class="text-decoration-none">Manage Depts &rarr;</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metric 3: Labs -->
+            <div class="col-12 col-sm-6 col-xl-2">
+                <div class="card metric-card p-3 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="metric-label">Network Labs</span>
+                        <div class="metric-icon bg-secondary text-white">🧪</div>
+                    </div>
+                    <div class="metric-number" th:text="${labCount}">0</div>
+                    <div class="small text-muted mt-2">
+                        <a th:href="@{/labs}" class="text-decoration-none">Manage Labs &rarr;</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metric 4: Total Devices -->
+            <div class="col-12 col-sm-6 col-xl-2">
+                <div class="card metric-card p-3 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="metric-label">Total Devices</span>
+                        <div class="metric-icon bg-dark text-white">🖥️</div>
+                    </div>
+                    <div class="metric-number" th:text="${totalDevices}">0</div>
+                    <div class="small text-muted mt-2">
+                        <a th:href="@{/devices}" class="text-decoration-none">All Devices &rarr;</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metric 5: Active Devices -->
+            <div class="col-12 col-sm-6 col-xl-2">
+                <div class="card metric-card p-3 h-100 border-start border-success border-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="metric-label text-success">Active Online</span>
+                        <div class="metric-icon bg-success text-white">🟢</div>
+                    </div>
+                    <div class="metric-number text-success" th:text="${activeDevices}">0</div>
+                    <div class="small text-muted mt-2">
+                        <span th:text="${activePercentage} + '% online'">0% online</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metric 6: Inactive Devices -->
+            <div class="col-12 col-sm-6 col-xl-2">
+                <div class="card metric-card p-3 h-100 border-start border-danger border-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="metric-label text-danger">Inactive Offline</span>
+                        <div class="metric-icon bg-danger text-white">🔴</div>
+                    </div>
+                    <div class="metric-number text-danger" th:text="${inactiveDevices}">0</div>
+                    <div class="small text-muted mt-2">
+                        <span th:text="${inactivePercentage} + '% offline'">0% offline</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Network Health & Active vs Inactive Breakdown -->
+        <div class="row g-4 mb-4">
+            
+            <div class="col-12 col-lg-8">
+                <div class="card table-card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span class="h6 mb-0 fw-bold">Recent Device Registrations &amp; IP Assignments</span>
+                        <a th:href="@{/devices}" class="btn btn-sm btn-outline-primary">View All Devices</a>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table custom-table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Device Name</th>
+                                        <th>Type</th>
+                                        <th>Assigned IP</th>
+                                        <th>MAC Address</th>
+                                        <th>Laboratory</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="dev : ${recentDevices}">
+                                        <td class="fw-semibold" th:text="${dev.deviceName}">Router-01</td>
+                                        <td>
+                                            <span class="badge-type" th:text="${dev.deviceType}">ROUTER</span>
+                                        </td>
+                                        <td>
+                                            <span class="font-mono ip-badge" th:text="${dev.ipAddress}">192.168.1.1</span>
+                                        </td>
+                                        <td>
+                                            <span class="font-mono small text-muted" th:text="${dev.macAddress}">00:1A:2B:3C:4D:5E</span>
+                                        </td>
+                                        <td th:text="${dev.lab != null ? dev.lab.labName : 'Unassigned'}">Networking Lab</td>
+                                        <td>
+                                            <span th:if="${dev.status == 'ACTIVE'}" class="badge-active">ACTIVE</span>
+                                            <span th:if="${dev.status != 'ACTIVE'}" class="badge-inactive">INACTIVE</span>
+                                        </td>
+                                        <td>
+                                            <a th:href="@{/devices/view/{id}(id=${dev.id})}" class="btn btn-sm btn-outline-secondary">View</a>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(recentDevices)}">
+                                        <td colspan="7" class="text-center py-4 text-muted">No devices registered yet.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Side Card: Active vs Inactive Status Breakdown & Quick Actions -->
+            <div class="col-12 col-lg-4">
+                <div class="card table-card h-100">
+                    <div class="card-header">
+                        <span class="h6 mb-0 fw-bold">Device Status Summary</span>
+                    </div>
+                    <div class="card-body">
+                        
+                        <h6 class="fw-semibold mb-2">Network Device Availability</h6>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between small fw-semibold mb-1">
+                                <span class="text-success">Active Online: <span th:text="${activeDevices}">0</span> (<span th:text="${activePercentage}">0</span>%)</span>
+                                <span class="text-danger">Inactive: <span th:text="${inactiveDevices}">0</span> (<span th:text="${inactivePercentage}">0</span>%)</span>
+                            </div>
+                            <!-- Pure HTML/CSS Progress Bar -->
+                            <div style="height: 18px; background-color: #e2e8f0; border-radius: 9px; overflow: hidden; display: flex;">
+                                <div th:style="'width: ' + ${activePercentage} + '%; height: 100%; background-color: #198754;'"></div>
+                                <div th:style="'width: ' + ${inactivePercentage} + '%; height: 100%; background-color: #dc3545;'"></div>
+                            </div>
+                        </div>
+
+                        <hr class="my-3">
+
+                        <h6 class="fw-semibold mb-3">Quick Navigation</h6>
+                        <div class="d-grid gap-2">
+                            <a th:href="@{/colleges/new}" class="btn btn-outline-primary text-start">+ Add New College</a>
+                            <a th:href="@{/departments/new}" class="btn btn-outline-primary text-start">+ Add New Department</a>
+                            <a th:href="@{/labs/new}" class="btn btn-outline-primary text-start">+ Add New Laboratory</a>
+                            <a th:href="@{/devices/new}" class="btn btn-outline-primary text-start">+ Add Network Device &amp; Assign IP</a>
+                            <a th:href="@{/ip-management}" class="btn btn-outline-secondary text-start">&bull; Open IP Allocation Matrix</a>
+                        </div>
+
+                        <hr class="my-3">
+                        <div class="bg-light p-3 rounded small">
+                            <div class="fw-bold mb-1">Engineering College Relational Structure:</div>
+                            <div class="text-muted">College &rarr; Department &rarr; Lab &rarr; Network Device &amp; Assigned IP</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

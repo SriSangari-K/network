@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Colleges')}"></head>
+<body>
+
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="container-fluid px-4 py-4">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+            <div>
+                <h2 class="fw-bold text-dark mb-1">College Management</h2>
+                <p class="text-muted mb-0">Institutions and campus units in the network registry</p>
+            </div>
+            <div>
+                <a th:href="@{/colleges/new}" class="btn btn-primary">+ Add New College</a>
+            </div>
+        </div>
+
+        <div class="card table-card shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="h6 mb-0 fw-bold">Registered Colleges</span>
+                <span class="badge bg-secondary" th:text="${#lists.size(colleges)} + ' Colleges'">0 Colleges</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table custom-table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>College Code</th>
+                                <th>College Name</th>
+                                <th>Contact Email</th>
+                                <th>Phone</th>
+                                <th>Address</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="col : ${colleges}">
+                                <td>
+                                    <span class="font-mono badge bg-primary px-2 py-1" th:text="${col.code}">NIET-001</span>
+                                </td>
+                                <td class="fw-semibold" th:text="${col.name}">National Institute of Engineering</td>
+                                <td th:text="${col.contactEmail}">info@niet.edu</td>
+                                <td th:text="${col.phone}">+1-555-0199</td>
+                                <td th:text="${col.address}">100 Campus Avenue</td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <a th:href="@{/departments(collegeId=${col.id})}" class="btn btn-sm btn-outline-info" title="View Departments">Departments</a>
+                                        <a th:href="@{/colleges/edit/{id}(id=${col.id})}" class="btn btn-sm btn-outline-primary">Edit</a>
+                                        
+                                        <!-- Native HTML POST form for deletion (No JavaScript) -->
+                                        <form th:action="@{/colleges/delete/{id}(id=${col.id})}" method="post" class="inline-form">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(colleges)}">
+                                <td colspan="6" class="text-center py-4 text-muted">No colleges found. Click "+ Add New College" above to create one.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

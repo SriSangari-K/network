@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${pageTitle})}"></head>
+<body>
+
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-9">
+                
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h3 class="fw-bold text-dark mb-0" th:text="${pageTitle}">Add New Network Device</h3>
+                        <p class="text-muted small mb-0">Specify hardware attributes and assign a unique IPv4 network address</p>
+                    </div>
+                    <a th:href="@{/devices}" class="btn btn-outline-secondary btn-sm">&larr; Back to Inventory</a>
+                </div>
+
+                <div class="card form-card shadow-sm p-4">
+                    
+                    <form th:action="@{/devices/save}" th:object="${device}" method="post">
+                        <input type="hidden" th:field="*{id}">
+
+                        <!-- Section 1: Device Identification -->
+                        <h5 class="fw-bold text-primary mb-3 pb-2 border-bottom">1. Device Identification &amp; Placement</h5>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="deviceName" class="form-label">Device Hostname / Name <span class="text-danger">*</span></label>
+                                <input type="text" id="deviceName" th:field="*{deviceName}" class="form-control" 
+                                       placeholder="e.g. Core-Router-01, LAB301-PC-15" required maxlength="100">
+                                <div class="form-hint">Unique hostname or network label.</div>
+                                <div th:if="${#fields.hasErrors('deviceName')}" th:errors="*{deviceName}" class="text-danger small mt-1"></div>
+                            </div>
+
+                            <div class="col-md-3 mb-3">
+                                <label for="deviceType" class="form-label">Device Type <span class="text-danger">*</span></label>
+                                <select id="deviceType" th:field="*{deviceType}" class="form-select" required>
+                                    <option value="">-- Select Type --</option>
+                                    <option th:each="t : ${deviceTypes}" th:value="${t}" th:text="${t}"></option>
+                                </select>
+                                <div th:if="${#fields.hasErrors('deviceType')}" th:errors="*{deviceType}" class="text-danger small mt-1"></div>
+                            </div>
+
+                            <div class="col-md-3 mb-3">
+                                <label for="status" class="form-label">Operational Status <span class="text-danger">*</span></label>
+                                <select id="status" th:field="*{status}" class="form-select" required>
+                                    <option value="ACTIVE">ACTIVE (Online)</option>
+                                    <option value="INACTIVE">INACTIVE (Offline / Maint)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Laboratory Affiliation -->
+                        <div class="mb-4">
+                            <label for="lab" class="form-label">Assigned Laboratory Facility <span class="text-danger">*</span></label>
+                            <select id="lab" th:field="*{lab.id}" class="form-select" required>
+                                <option value="">-- Select Laboratory --</option>
+                                <option th:each="l : ${labs}" 
+                                        th:value="${l.id}" 
+                                        th:text="${l.labNumber} + ' - ' + ${l.labName} + ' (' + ${l.department.name} + ')'">
+                                </option>
+                            </select>
+                            <div class="form-hint">The physical laboratory room where this device is deployed.</div>
+                            <div th:if="${#fields.hasErrors('lab')}" th:errors="*{lab}" class="text-danger small mt-1"></div>
+                        </div>
+
+                        <!-- Section 2: IP Address & Network Configuration -->
+                        <h5 class="fw-bold text-primary mb-3 pb-2 border-bottom">2. IP Address &amp; Network Configuration</h5>
+
+                        <div class="row">
+                            <!-- IP Address with IPv4 regex validation -->
+                            <div class="col-md-6 mb-3">
+                                <label for="ipAddress" class="form-label">IPv4 Address <span class="text-danger">*</span></label>
+                                <input type="text" id="ipAddress" th:field="*{ipAddress}" class="form-control font-mono" 
+                                       placeholder="e.g. 192.168.1.100" 
+                                       pattern="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+                                       title="Must be a valid IPv4 address with octets 0-255 (e.g. 192.168.1.100)"
+                                       required>
+                                <div class="form-hint">Must be unique across the campus network (Duplicate check will be enforced).</div>
+                                <div th:if="${#fields.hasErrors('ipAddress')}" th:errors="*{ipAddress}" class="text-danger small mt-1"></div>
+                            </div>
+
+                            <!-- MAC Address with pattern validation -->
+                            <div class="col-md-6 mb-3">
+                                <label for="macAddress" class="form-label">Hardware MAC Address <span class="text-danger">*</span></label>
+                                <input type="text" id="macAddress" th:field="*{macAddress}" class="form-control font-mono" 
+                                       placeholder="e.g. 00:1A:2B:3C:4D:5E" 
+                                       pattern="^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$"
+                                       title="Must be 6 pairs of hex digits separated by colons or hyphens (e.g. 00:1A:2B:3C:4D:5E)"
+                                       required>
+                                <div class="form-hint">Format: 00:1A:2B:3C:4D:5E or 00-1A-2B-3C-4D-5E</div>
+                                <div th:if="${#fields.hasErrors('macAddress')}" th:errors="*{macAddress}" class="text-danger small mt-1"></div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="subnetMask" class="form-label">Subnet Mask</label>
+                                <input type="text" id="subnetMask" th:field="*{subnetMask}" class="form-control font-mono" 
+                                       placeholder="255.255.255.0"
+                                       pattern="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+                                       title="Subnet Mask (e.g. 255.255.255.0)">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="gateway" class="form-label">Default Gateway</label>
+                                <input type="text" id="gateway" th:field="*{gateway}" class="form-control font-mono" 
+                                       placeholder="192.168.1.1"
+                                       pattern="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+                                       title="Gateway IP (e.g. 192.168.1.1)">
+                            </div>
+                        </div>
+
+                        <!-- Section 3: Notes & Additional Info -->
+                        <div class="mb-4">
+                            <label for="notes" class="form-label">Device Hardware &amp; Role Notes</label>
+                            <textarea id="notes" th:field="*{notes}" class="form-control" rows="3" 
+                                      placeholder="Hardware specifications, serial numbers, port assignments, or maintenance schedules..."></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 pt-2 border-top">
+                            <a th:href="@{/devices}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary px-4">Save Device &amp; Assign IP</button>
+                        </div>
+                    </form>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

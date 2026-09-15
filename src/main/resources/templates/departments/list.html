@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Departments')}"></head>
+<body>
+
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="container-fluid px-4 py-4">
+        
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-2 border-bottom">
+            <div>
+                <h2 class="fw-bold text-dark mb-1">Department Management</h2>
+                <p class="text-muted mb-0">Academic departments mapped to engineering colleges</p>
+            </div>
+            <div class="mt-3 mt-md-0">
+                <a th:href="@{/departments/new}" class="btn btn-primary">+ Add New Department</a>
+            </div>
+        </div>
+
+        <!-- Filter By College Bar (Standard HTML GET Form - No JavaScript) -->
+        <div class="card p-3 mb-4 border-0 shadow-sm">
+            <form th:action="@{/departments}" method="get" class="row g-2 align-items-center">
+                <div class="col-12 col-md-5">
+                    <label for="collegeId" class="visually-hidden">Filter by College</label>
+                    <select id="collegeId" name="collegeId" class="form-select">
+                        <option value="">-- All Colleges --</option>
+                        <option th:each="c : ${colleges}" 
+                                th:value="${c.id}" 
+                                th:text="${c.name} + ' (' + ${c.code} + ')'"
+                                th:selected="${c.id == selectedCollegeId}">
+                        </option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-secondary">Filter</button>
+                    <a th:href="@{/departments}" class="btn btn-outline-secondary">Reset</a>
+                </div>
+            </form>
+        </div>
+
+        <div class="card table-card shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="h6 mb-0 fw-bold">Department Directory</span>
+                <span class="badge bg-secondary" th:text="${#lists.size(departments)} + ' Departments'">0 Departments</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table custom-table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Dept Code</th>
+                                <th>Department Name</th>
+                                <th>Affiliated College</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="dept : ${departments}">
+                                <td>
+                                    <span class="font-mono badge bg-info text-dark px-2 py-1" th:text="${dept.code}">CSE</span>
+                                </td>
+                                <td class="fw-semibold" th:text="${dept.name}">Computer Science &amp; Engineering</td>
+                                <td>
+                                    <span th:if="${dept.college != null}" th:text="${dept.college.name} + ' [' + ${dept.college.code} + ']'">NIET</span>
+                                    <span th:if="${dept.college == null}" class="text-danger">Unmapped</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <a th:href="@{/labs(departmentId=${dept.id})}" class="btn btn-sm btn-outline-info" title="View Labs">Labs</a>
+                                        <a th:href="@{/departments/edit/{id}(id=${dept.id})}" class="btn btn-sm btn-outline-primary">Edit</a>
+                                        
+                                        <!-- Native HTML POST form for deletion (No JavaScript) -->
+                                        <form th:action="@{/departments/delete/{id}(id=${dept.id})}" method="post" class="inline-form">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(departments)}">
+                                <td colspan="4" class="text-center py-4 text-muted">No departments found.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

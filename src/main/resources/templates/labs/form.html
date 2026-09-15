@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${pageTitle})}"></head>
+<body>
+
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-7">
+                
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="fw-bold text-dark mb-0" th:text="${pageTitle}">Add New Laboratory</h3>
+                    <a th:href="@{/labs}" class="btn btn-outline-secondary btn-sm">&larr; Back to Labs</a>
+                </div>
+
+                <div class="card form-card shadow-sm p-4">
+                    
+                    <form th:action="@{/labs/save}" th:object="${lab}" method="post">
+                        <input type="hidden" th:field="*{id}">
+
+                        <!-- Mapped Department Selection -->
+                        <div class="mb-3">
+                            <label for="department" class="form-label">Parent Department <span class="text-danger">*</span></label>
+                            <select id="department" th:field="*{department.id}" class="form-select" required>
+                                <option value="">-- Select Department --</option>
+                                <option th:each="d : ${departments}" 
+                                        th:value="${d.id}" 
+                                        th:text="${d.name} + ' (' + ${d.code} + ') - ' + ${d.college.name}">
+                                </option>
+                            </select>
+                            <div class="form-hint">Select the academic department that owns this lab facility.</div>
+                            <div th:if="${#fields.hasErrors('department')}" th:errors="*{department}" class="text-danger small mt-1"></div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="labNumber" class="form-label">Lab Identifier / Number <span class="text-danger">*</span></label>
+                                <input type="text" id="labNumber" th:field="*{labNumber}" class="form-control" 
+                                       placeholder="e.g. LAB-301" required maxlength="50">
+                                <div class="form-hint">Room or lab designation number.</div>
+                                <div th:if="${#fields.hasErrors('labNumber')}" th:errors="*{labNumber}" class="text-danger small mt-1"></div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="totalCapacity" class="form-label">Total Node Capacity</label>
+                                <input type="number" id="totalCapacity" th:field="*{totalCapacity}" class="form-control" 
+                                       placeholder="e.g. 40" min="1" max="500">
+                                <div class="form-hint">Maximum number of computer stations.</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="labName" class="form-label">Laboratory Name <span class="text-danger">*</span></label>
+                            <input type="text" id="labName" th:field="*{labName}" class="form-control" 
+                                   placeholder="e.g. Advanced Networking &amp; Security Lab" required maxlength="100">
+                            <div th:if="${#fields.hasErrors('labName')}" th:errors="*{labName}" class="text-danger small mt-1"></div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="locationFloor" class="form-label">Physical Location / Floor</label>
+                            <input type="text" id="locationFloor" th:field="*{locationFloor}" class="form-control" 
+                                   placeholder="e.g. 3rd Floor - Main Science &amp; Tech Block" maxlength="50">
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a th:href="@{/labs}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary px-4">Save Laboratory</button>
+                        </div>
+                    </form>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${pageTitle})}"></head>
+<body>
+
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-7">
+                
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="fw-bold text-dark mb-0" th:text="${pageTitle}">Add New Department</h3>
+                    <a th:href="@{/departments}" class="btn btn-outline-secondary btn-sm">&larr; Back to Departments</a>
+                </div>
+
+                <div class="card form-card shadow-sm p-4">
+                    
+                    <form th:action="@{/departments/save}" th:object="${department}" method="post">
+                        <input type="hidden" th:field="*{id}">
+
+                        <!-- Mapped College Selection -->
+                        <div class="mb-3">
+                            <label for="college" class="form-label">Affiliated College <span class="text-danger">*</span></label>
+                            <select id="college" th:field="*{college.id}" class="form-select" required>
+                                <option value="">-- Select College --</option>
+                                <option th:each="col : ${colleges}" 
+                                        th:value="${col.id}" 
+                                        th:text="${col.name} + ' (' + ${col.code} + ')'">
+                                </option>
+                            </select>
+                            <div class="form-hint">Specifies which college campus this department belongs to.</div>
+                            <div th:if="${#fields.hasErrors('college')}" th:errors="*{college}" class="text-danger small mt-1"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="code" class="form-label">Department Code <span class="text-danger">*</span></label>
+                            <input type="text" id="code" th:field="*{code}" class="form-control" 
+                                   placeholder="e.g. CSE, IT, ECE, MECH" required minlength="2" maxlength="50">
+                            <div class="form-hint">Short acronym or code for the department.</div>
+                            <div th:if="${#fields.hasErrors('code')}" th:errors="*{code}" class="text-danger small mt-1"></div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="name" class="form-label">Department Name <span class="text-danger">*</span></label>
+                            <input type="text" id="name" th:field="*{name}" class="form-control" 
+                                   placeholder="e.g. Computer Science and Engineering" required maxlength="100">
+                            <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger small mt-1"></div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a th:href="@{/departments}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary px-4">Save Department</button>
+                        </div>
+                    </form>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${pageTitle})}"></head>
+<body>
+
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-7">
+                
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="fw-bold text-dark mb-0" th:text="${pageTitle}">Add New College</h3>
+                    <a th:href="@{/colleges}" class="btn btn-outline-secondary btn-sm">&larr; Back to Colleges</a>
+                </div>
+
+                <div class="card form-card shadow-sm p-4">
+                    
+                    <form th:action="@{/colleges/save}" th:object="${college}" method="post">
+                        <input type="hidden" th:field="*{id}">
+
+                        <div class="mb-3">
+                            <label for="code" class="form-label">College Code <span class="text-danger">*</span></label>
+                            <input type="text" id="code" th:field="*{code}" class="form-control" 
+                                   placeholder="e.g. NIET-001" required minlength="2" maxlength="50">
+                            <div class="form-hint">Unique identifier code for the college or campus branch.</div>
+                            <div th:if="${#fields.hasErrors('code')}" th:errors="*{code}" class="text-danger small mt-1"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="name" class="form-label">College Name <span class="text-danger">*</span></label>
+                            <input type="text" id="name" th:field="*{name}" class="form-control" 
+                                   placeholder="e.g. National Institute of Engineering & Technology" required maxlength="150">
+                            <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger small mt-1"></div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="contactEmail" class="form-label">Contact Email</label>
+                                <input type="email" id="contactEmail" th:field="*{contactEmail}" class="form-control" 
+                                       placeholder="contact@college.edu" maxlength="100">
+                                <div th:if="${#fields.hasErrors('contactEmail')}" th:errors="*{contactEmail}" class="text-danger small mt-1"></div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="phone" class="form-label">Phone Number</label>
+                                <input type="text" id="phone" th:field="*{phone}" class="form-control" 
+                                       placeholder="+1-555-0199" maxlength="20">
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="address" class="form-label">Campus Address</label>
+                            <textarea id="address" th:field="*{address}" class="form-control" rows="3" 
+                                      placeholder="Campus street address, city, state, postal code" maxlength="255"></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a th:href="@{/colleges}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary px-4">Save College</button>
+                        </div>
+                    </form>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

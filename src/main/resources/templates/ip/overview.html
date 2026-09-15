@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('IP Address Management')}"></head>
+<body>
+
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <div class="container-fluid px-4 py-4">
+        
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-2 border-bottom">
+            <div>
+                <h2 class="fw-bold text-dark mb-1">IP Address Management (IPAMS)</h2>
+                <p class="text-muted mb-0">Monitor campus subnet allocations, validate IPv4 formats, and audit duplicate collisions</p>
+            </div>
+            <div class="mt-3 mt-md-0">
+                <a th:href="@{/devices/new}" class="btn btn-primary">+ Assign New IP Address</a>
+            </div>
+        </div>
+
+        <!-- Metric Cards for IP Allocation -->
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-md-4">
+                <div class="card metric-card p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="metric-label">Total Assigned IPs</span>
+                        <div class="metric-icon bg-primary text-white">🌐</div>
+                    </div>
+                    <div class="metric-number" th:text="${totalAssigned}">0</div>
+                    <div class="small text-muted mt-2">Active records in database</div>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="card metric-card p-3 border-start border-success border-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="metric-label text-success">Active Online IPs</span>
+                        <div class="metric-icon bg-success text-white">🟢</div>
+                    </div>
+                    <div class="metric-number text-success" th:text="${activeCount}">0</div>
+                    <div class="small text-muted mt-2">Live traffic eligible</div>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="card metric-card p-3 border-start border-danger border-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="metric-label text-danger">Inactive / Reserved IPs</span>
+                        <div class="metric-icon bg-danger text-white">🔴</div>
+                    </div>
+                    <div class="metric-number text-danger" th:text="${inactiveCount}">0</div>
+                    <div class="small text-muted mt-2">Maintenance or offline devices</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- IP Address Availability & Conflict Checker (Pure HTML Form - Zero JavaScript) -->
+        <div class="card form-card shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h5 class="fw-bold mb-0 text-dark">IPv4 Availability &amp; Duplicate Conflict Checker</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted small mb-3">
+                    Test an IP address prior to hardware configuration. This utility strictly validates the 4-octet IPv4 specification (0-255) and queries the central registry for conflict collisions.
+                </p>
+
+                <!-- Check Form -->
+                <form th:action="@{/ip-management/check}" method="post" class="row g-2 align-items-center">
+                    <div class="col-12 col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text font-mono">IPv4:</span>
+                            <input type="text" name="checkIp" class="form-control font-mono" 
+                                   placeholder="e.g. 192.168.1.50" 
+                                   pattern="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+                                   title="Enter valid IPv4 format (e.g. 192.168.1.50)"
+                                   th:value="${searchedIp}" required>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <button type="submit" class="btn btn-primary w-100">Audit &amp; Check Availability</button>
+                    </div>
+                </form>
+
+                <!-- Check Result Banner -->
+                <div th:if="${ipCheckResult}" class="mt-4">
+                    <!-- Case 1: Invalid Format -->
+                    <div th:if="${!ipCheckResult.validFormat}" class="alert alert-danger mb-0">
+                        <div class="fw-bold">Format Validation Failed:</div>
+                        <span th:text="${ipCheckResult.message}">Invalid format.</span>
+                    </div>
+
+                    <!-- Case 2: Duplicate / In Use -->
+                    <div th:if="${ipCheckResult.validFormat && ipCheckResult.duplicate}" class="alert alert-warning mb-0 border-warning">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span class="badge bg-danger fs-6">CONFLICT DETECTED</span>
+                            <span class="font-mono fw-bold fs-5" th:text="${ipCheckResult.ipAddress}">192.168.1.1</span>
+                        </div>
+                        <p class="mb-2" th:text="${ipCheckResult.message}">IP is currently in use.</p>
+                        <div th:if="${ipCheckResult.assignedDevice}" class="bg-white p-3 rounded border">
+                            <div class="small fw-bold text-dark mb-1">Existing Device Assignment:</div>
+                            <ul class="mb-0 small text-secondary">
+                                <li>Device Name: <strong th:text="${ipCheckResult.assignedDevice.deviceName}">Router</strong></li>
+                                <li>Type: <span class="badge-type" th:text="${ipCheckResult.assignedDevice.deviceType}">ROUTER</span></li>
+                                <li>MAC Address: <code th:text="${ipCheckResult.assignedDevice.macAddress}">00:1A:2B:3C:4D:5E</code></li>
+                                <li>Laboratory: <span th:text="${ipCheckResult.assignedDevice.lab.labName}">Lab 301</span></li>
+                                <li>Status: <span th:text="${ipCheckResult.assignedDevice.status}" th:class="${ipCheckResult.assignedDevice.status == 'ACTIVE' ? 'text-success fw-bold' : 'text-danger fw-bold'}">ACTIVE</span></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Case 3: Available -->
+                    <div th:if="${ipCheckResult.validFormat && !ipCheckResult.duplicate}" class="alert alert-success mb-0 border-success">
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <span class="badge bg-success fs-6">AVAILABLE</span>
+                            <span class="font-mono fw-bold fs-5" th:text="${ipCheckResult.ipAddress}">192.168.1.50</span>
+                        </div>
+                        <p class="mb-2" th:text="${ipCheckResult.message}">IP address is available.</p>
+                        <a th:href="@{/devices/new}" class="btn btn-sm btn-success">+ Assign This IP to a New Device</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- IP Address Registry Table -->
+        <div class="card table-card shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="h6 mb-0 fw-bold">Active Campus IP Allocations</span>
+                <span class="badge bg-secondary" th:text="${#lists.size(devices)} + ' Assigned IPs'">0 Assigned IPs</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table custom-table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Assigned IPv4</th>
+                                <th>Device Hostname</th>
+                                <th>Type</th>
+                                <th>Subnet Mask</th>
+                                <th>Gateway</th>
+                                <th>Laboratory &amp; Dept</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="dev : ${devices}">
+                                <td>
+                                    <span class="font-mono ip-badge fw-bold" th:text="${dev.ipAddress}">192.168.1.1</span>
+                                </td>
+                                <td class="fw-semibold">
+                                    <a th:href="@{/devices/view/{id}(id=${dev.id})}" class="text-decoration-none text-dark" th:text="${dev.deviceName}">
+                                        Cisco-Router
+                                    </a>
+                                </td>
+                                <td>
+                                    <span class="badge-type" th:text="${dev.deviceType}">ROUTER</span>
+                                </td>
+                                <td class="font-mono small text-secondary" th:text="${dev.subnetMask}">255.255.255.0</td>
+                                <td class="font-mono small text-secondary" th:text="${dev.gateway}">192.168.1.1</td>
+                                <td>
+                                    <span th:text="${dev.lab != null ? dev.lab.labNumber : 'N/A'}">LAB-301</span>
+                                    <span class="text-muted small" th:text="${dev.lab != null && dev.lab.department != null ? ' (' + dev.lab.department.code + ')' : ''}">(CSE)</span>
+                                </td>
+                                <td>
+                                    <span th:if="${dev.status == 'ACTIVE'}" class="badge-active">ACTIVE</span>
+                                    <span th:if="${dev.status != 'ACTIVE'}" class="badge-inactive">INACTIVE</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <a th:href="@{/devices/view/{id}(id=${dev.id})}" class="btn btn-sm btn-outline-info">Details</a>
+                                        <a th:href="@{/devices/edit/{id}(id=${dev.id})}" class="btn btn-sm btn-outline-primary">Edit IP</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(devices)}">
+                                <td colspan="8" class="text-center py-4 text-muted">No IP addresses currently allocated.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>
