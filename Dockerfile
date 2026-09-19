@@ -23,5 +23,7 @@ COPY --from=builder /app/target/*.jar app.jar
 ENV PORT=8080
 EXPOSE 8080
 
-# Run Spring Boot application
-ENTRYPOINT ["sh", "-c", "java -Dspring.profiles.active=h2 -Dserver.port=${PORT} -jar app.jar"]
+# Run Spring Boot application. Railway and similar hosts can override
+# SPRING_PROFILES_ACTIVE and PORT through environment variables.
+ENV SPRING_PROFILES_ACTIVE=prod
+ENTRYPOINT ["sh", "-c", "java -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE} -Dserver.port=${PORT} -jar app.jar"]

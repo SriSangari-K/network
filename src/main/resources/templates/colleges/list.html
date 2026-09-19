@@ -8,13 +8,13 @@
 
     <div class="container-fluid px-4 py-4">
         
-        <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
             <div>
-                <h2 class="fw-bold text-dark mb-1">College Management</h2>
-                <p class="text-muted mb-0">Institutions and campus units in the network registry</p>
+                <h2 class="fw-bold text-white mb-1">College Management</h2>
+                <p class="text-secondary small mb-0">Institutions and campus units in the network registry</p>
             </div>
             <div>
-                <a th:href="@{/colleges/new}" class="btn btn-primary">+ Add New College</a>
+                <a th:href="@{/colleges/new}" class="btn btn-electric-blue">+ Add New College</a>
             </div>
         </div>
 
@@ -48,7 +48,7 @@
                                 <td>
                                     <div class="d-flex gap-2">
                                         <a th:href="@{/departments(collegeId=${col.id})}" class="btn btn-sm btn-outline-info" title="View Departments">Departments</a>
-                                        <a th:href="@{/colleges/edit/{id}(id=${col.id})}" class="btn btn-sm btn-outline-primary">Edit</a>
+                                        <a th:href="@{/colleges/edit/{id}(id=${col.id})}" class="btn btn-sm btn-glass">Edit</a>
                                         
                                         <!-- Native HTML POST form for deletion (No JavaScript) -->
                                         <form th:action="@{/colleges/delete/{id}(id=${col.id})}" method="post" class="inline-form">

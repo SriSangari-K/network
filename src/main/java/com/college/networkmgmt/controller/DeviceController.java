@@ -47,6 +47,9 @@ public class DeviceController {
         model.addAttribute("selectedLabId", labId);
         model.addAttribute("deviceTypes", DEVICE_TYPES);
         model.addAttribute("labs", labService.findAll());
+        model.addAttribute("totalDevices", deviceService.countTotal());
+        model.addAttribute("activeDevices", deviceService.countActive());
+        model.addAttribute("inactiveDevices", deviceService.countInactive());
         model.addAttribute("activePage", "devices");
 
         return "devices/list";

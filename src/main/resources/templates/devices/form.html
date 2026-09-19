@@ -12,19 +12,19 @@
                 
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <div>
-                        <h3 class="fw-bold text-dark mb-0" th:text="${pageTitle}">Add New Network Device</h3>
-                        <p class="text-muted small mb-0">Specify hardware attributes and assign a unique IPv4 network address</p>
+                        <h3 class="fw-bold text-white mb-0" th:text="${pageTitle}">Add New Network Device</h3>
+                        <p class="text-secondary small mb-0">Specify hardware attributes and assign a unique IPv4 network address</p>
                     </div>
-                    <a th:href="@{/devices}" class="btn btn-outline-secondary btn-sm">&larr; Back to Inventory</a>
+                    <a th:href="@{/devices}" class="btn btn-glass btn-sm">&larr; Back to Inventory</a>
                 </div>
 
-                <div class="card form-card shadow-sm p-4">
+                <div class="card form-card shadow-lg p-4">
                     
                     <form th:action="@{/devices/save}" th:object="${device}" method="post">
                         <input type="hidden" th:field="*{id}">
 
                         <!-- Section 1: Device Identification -->
-                        <h5 class="fw-bold text-primary mb-3 pb-2 border-bottom">1. Device Identification &amp; Placement</h5>
+                        <h5 class="fw-bold text-info mb-3 pb-2 border-bottom">1. Device Identification &amp; Placement</h5>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
@@ -68,7 +68,7 @@
                         </div>
 
                         <!-- Section 2: IP Address & Network Configuration -->
-                        <h5 class="fw-bold text-primary mb-3 pb-2 border-bottom">2. IP Address &amp; Network Configuration</h5>
+                        <h5 class="fw-bold text-info mb-3 pb-2 border-bottom">2. IP Address &amp; Network Configuration</h5>
 
                         <div class="row">
                             <!-- IP Address with IPv4 regex validation -->
@@ -121,8 +121,8 @@
                         </div>
 
                         <div class="d-flex justify-content-end gap-2 pt-2 border-top">
-                            <a th:href="@{/devices}" class="btn btn-secondary">Cancel</a>
-                            <button type="submit" class="btn btn-primary px-4">Save Device &amp; Assign IP</button>
+                            <a th:href="@{/devices}" class="btn btn-glass">Cancel</a>
+                            <button type="submit" class="btn btn-electric-blue px-4">Save Device &amp; Assign IP</button>
                         </div>
                     </form>
 

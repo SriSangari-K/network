@@ -12,85 +12,85 @@
                 
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <div>
-                        <h3 class="fw-bold text-dark mb-0">Device Network Profile</h3>
-                        <p class="text-muted small mb-0">Comprehensive network parameters and physical deployment details</p>
+                        <h3 class="fw-bold text-white mb-0">Device Network Profile</h3>
+                        <p class="text-secondary small mb-0">Comprehensive network parameters and physical deployment details</p>
                     </div>
                     <div class="d-flex gap-2">
-                        <a th:href="@{/devices}" class="btn btn-outline-secondary btn-sm">&larr; Back to Inventory</a>
-                        <a th:href="@{/devices/edit/{id}(id=${device.id})}" class="btn btn-primary btn-sm">Edit Device</a>
+                        <a th:href="@{/devices}" class="btn btn-glass btn-sm">&larr; Back to Inventory</a>
+                        <a th:href="@{/devices/edit/{id}(id=${device.id})}" class="btn btn-electric-blue btn-sm">Edit Device</a>
                         <form th:action="@{/devices/delete/{id}(id=${device.id})}" method="post" class="inline-form">
-                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
                         </form>
                     </div>
                 </div>
 
-                <div class="card form-card shadow-sm p-4 mb-4">
+                <div class="card form-card shadow-lg p-4 mb-4">
                     
                     <!-- Header with Status Badge -->
                     <div class="d-flex justify-content-between align-items-center pb-3 mb-4 border-bottom">
                         <div>
                             <span class="badge-type fs-6 me-2" th:text="${device.deviceType}">ROUTER</span>
-                            <span class="h4 fw-bold text-dark mb-0" th:text="${device.deviceName}">Core-Gateway-Router</span>
+                            <span class="h4 fw-bold text-white mb-0" th:text="${device.deviceName}">Core-Gateway-Router</span>
                         </div>
                         <div>
-                            <span th:if="${device.status == 'ACTIVE'}" class="badge-active fs-6">🟢 ACTIVE (Online)</span>
-                            <span th:if="${device.status != 'ACTIVE'}" class="badge-inactive fs-6">🔴 INACTIVE (Offline)</span>
+                            <span th:if="${device.status == 'ACTIVE'}" class="badge-active fs-6">🟢 Online (ACTIVE)</span>
+                            <span th:if="${device.status != 'ACTIVE'}" class="badge-inactive fs-6">🔴 Offline (INACTIVE)</span>
                         </div>
                     </div>
 
                     <!-- Network Parameters Grid -->
-                    <h5 class="fw-bold text-primary mb-3">Network &amp; IP Allocation</h5>
+                    <h5 class="fw-bold text-info mb-3">Network &amp; IP Allocation</h5>
                     <div class="row g-3 mb-4">
                         <div class="col-md-6">
-                            <div class="p-3 bg-light rounded">
-                                <span class="text-muted small d-block mb-1">Assigned IPv4 Address:</span>
-                                <span class="font-mono fs-5 fw-bold text-dark" th:text="${device.ipAddress}">192.168.1.1</span>
+                            <div class="p-3 rounded" style="background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-subtle);">
+                                <span class="text-secondary small d-block mb-1">Assigned IPv4 Address:</span>
+                                <span class="font-mono fs-5 fw-bold text-info" th:text="${device.ipAddress}">192.168.1.1</span>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="p-3 bg-light rounded">
-                                <span class="text-muted small d-block mb-1">Hardware MAC Address:</span>
-                                <span class="font-mono fs-5 fw-bold text-dark" th:text="${device.macAddress}">00:1A:2B:3C:4D:5E</span>
+                            <div class="p-3 rounded" style="background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-subtle);">
+                                <span class="text-secondary small d-block mb-1">Hardware MAC Address:</span>
+                                <span class="font-mono fs-5 fw-bold text-light" th:text="${device.macAddress}">00:1A:2B:3C:4D:5E</span>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="p-3 bg-light rounded">
-                                <span class="text-muted small d-block mb-1">Subnet Mask:</span>
-                                <span class="font-mono fw-semibold text-secondary" th:text="${device.subnetMask}">255.255.255.0</span>
+                            <div class="p-3 rounded" style="background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-subtle);">
+                                <span class="text-secondary small d-block mb-1">Subnet Mask:</span>
+                                <span class="font-mono fw-semibold text-light" th:text="${device.subnetMask}">255.255.255.0</span>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="p-3 bg-light rounded">
-                                <span class="text-muted small d-block mb-1">Default Gateway:</span>
-                                <span class="font-mono fw-semibold text-secondary" th:text="${device.gateway}">192.168.1.254</span>
+                            <div class="p-3 rounded" style="background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-subtle);">
+                                <span class="text-secondary small d-block mb-1">Default Gateway:</span>
+                                <span class="font-mono fw-semibold text-light" th:text="${device.gateway}">192.168.1.254</span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Physical Placement Hierarchy -->
-                    <h5 class="fw-bold text-primary mb-3">Campus Placement &amp; Laboratory Hierarchy</h5>
-                    <div class="p-3 bg-light rounded mb-4">
+                    <h5 class="fw-bold text-info mb-3">Campus Placement &amp; Laboratory Hierarchy</h5>
+                    <div class="p-3 rounded mb-4" style="background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-subtle);">
                         <div class="row g-2">
                             <div class="col-md-4">
-                                <span class="text-muted small d-block">Laboratory:</span>
-                                <strong class="text-dark" th:text="${device.lab != null ? device.lab.labName + ' (' + device.lab.labNumber + ')' : 'Unassigned'}">LAB-301</strong>
-                                <div class="small text-muted" th:text="${device.lab != null ? device.lab.locationFloor : ''}">3rd Floor</div>
+                                <span class="text-secondary small d-block">Laboratory:</span>
+                                <strong class="text-white" th:text="${device.lab != null ? device.lab.labName + ' (' + device.lab.labNumber + ')' : 'Unassigned'}">LAB-301</strong>
+                                <div class="small text-secondary" th:text="${device.lab != null ? device.lab.locationFloor : ''}">3rd Floor</div>
                             </div>
                             <div class="col-md-4">
-                                <span class="text-muted small d-block">Department:</span>
-                                <strong class="text-dark" th:text="${device.lab != null && device.lab.department != null ? device.lab.department.name + ' [' + device.lab.department.code + ']' : 'N/A'}">CSE</strong>
+                                <span class="text-secondary small d-block">Department:</span>
+                                <strong class="text-white" th:text="${device.lab != null && device.lab.department != null ? device.lab.department.name + ' [' + device.lab.department.code + ']' : 'N/A'}">CSE</strong>
                             </div>
                             <div class="col-md-4">
-                                <span class="text-muted small d-block">College:</span>
-                                <strong class="text-dark" th:text="${device.lab != null && device.lab.department != null && device.lab.department.college != null ? device.lab.department.college.name : 'N/A'}">National Institute</strong>
+                                <span class="text-secondary small d-block">College:</span>
+                                <strong class="text-white" th:text="${device.lab != null && device.lab.department != null && device.lab.department.college != null ? device.lab.department.college.name : 'N/A'}">National Institute</strong>
                             </div>
                         </div>
                     </div>
 
                     <!-- Notes -->
-                    <h5 class="fw-bold text-primary mb-2">Device &amp; Hardware Notes</h5>
-                    <div class="p-3 bg-light rounded">
-                        <p class="mb-0 text-secondary" th:text="${device.notes != null && !device.notes.isBlank() ? device.notes : 'No specific notes recorded for this network hardware.'}">
+                    <h5 class="fw-bold text-info mb-2">Device &amp; Hardware Notes</h5>
+                    <div class="p-3 rounded" style="background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-subtle);">
+                        <p class="mb-0 text-light" th:text="${device.notes != null && !device.notes.isBlank() ? device.notes : 'No specific notes recorded for this network hardware.'}">
                             Primary core router handling intranet traffic.
                         </p>
                     </div>

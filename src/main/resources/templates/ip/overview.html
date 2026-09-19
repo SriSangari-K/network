@@ -8,13 +8,13 @@
 
     <div class="container-fluid px-4 py-4">
         
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-2 border-bottom">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 border-bottom">
             <div>
-                <h2 class="fw-bold text-dark mb-1">IP Address Management (IPAMS)</h2>
-                <p class="text-muted mb-0">Monitor campus subnet allocations, validate IPv4 formats, and audit duplicate collisions</p>
+                <h2 class="fw-bold text-white mb-1">IP Address Management (IPAMS)</h2>
+                <p class="text-secondary small mb-0">Monitor campus subnet allocations, validate IPv4 formats, and audit duplicate collisions</p>
             </div>
             <div class="mt-3 mt-md-0">
-                <a th:href="@{/devices/new}" class="btn btn-primary">+ Assign New IP Address</a>
+                <a th:href="@{/devices/new}" class="btn btn-electric-blue">+ Assign New IP Address</a>
             </div>
         </div>
 
@@ -24,27 +24,31 @@
                 <div class="card metric-card p-3">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <span class="metric-label">Total Assigned IPs</span>
-                        <div class="metric-icon bg-primary text-white">🌐</div>
+                        <div class="metric-icon" style="background: rgba(2, 132, 199, 0.2); color: #38bdf8;">🌐</div>
                     </div>
                     <div class="metric-number" th:text="${totalAssigned}">0</div>
                     <div class="small text-muted mt-2">Active records in database</div>
                 </div>
             </div>
             <div class="col-12 col-md-4">
-                <div class="card metric-card p-3 border-start border-success border-4">
+                <div class="card metric-card card-active-glow p-3">
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="metric-label text-success">Active Online IPs</span>
-                        <div class="metric-icon bg-success text-white">🟢</div>
+                        <span class="metric-label text-success">
+                            <span class="indicator-pulse-green"></span>Active Online IPs
+                        </span>
+                        <div class="metric-icon" style="background: rgba(34, 197, 94, 0.2); color: #22c55e;">🟢</div>
                     </div>
                     <div class="metric-number text-success" th:text="${activeCount}">0</div>
                     <div class="small text-muted mt-2">Live traffic eligible</div>
                 </div>
             </div>
             <div class="col-12 col-md-4">
-                <div class="card metric-card p-3 border-start border-danger border-4">
+                <div class="card metric-card card-inactive-glow p-3">
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="metric-label text-danger">Inactive / Reserved IPs</span>
-                        <div class="metric-icon bg-danger text-white">🔴</div>
+                        <span class="metric-label text-danger">
+                            <span class="indicator-pulse-red"></span>Inactive / Reserved IPs
+                        </span>
+                        <div class="metric-icon" style="background: rgba(239, 68, 68, 0.2); color: #ef4444;">🔴</div>
                     </div>
                     <div class="metric-number text-danger" th:text="${inactiveCount}">0</div>
                     <div class="small text-muted mt-2">Maintenance or offline devices</div>
@@ -53,9 +57,9 @@
         </div>
 
         <!-- IP Address Availability & Conflict Checker (Pure HTML Form - Zero JavaScript) -->
-        <div class="card form-card shadow-sm mb-4">
-            <div class="card-header bg-white">
-                <h5 class="fw-bold mb-0 text-dark">IPv4 Availability &amp; Duplicate Conflict Checker</h5>
+        <div class="card form-card shadow-lg mb-4">
+            <div class="card-header">
+                <h5 class="fw-bold mb-0 text-white">IPv4 Availability &amp; Duplicate Conflict Checker</h5>
             </div>
             <div class="card-body">
                 <p class="text-muted small mb-3">

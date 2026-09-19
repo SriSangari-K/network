@@ -1,83 +1,137 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: head('Network Devices')}"></head>
-<body>
+<head th:replace="~{fragments/layout :: head('Network Device Inventory')}"></head>
+<body class="bg-dark text-light">
 
+    <!-- Top Horizontal Navigation Bar -->
     <nav th:replace="~{fragments/layout :: navbar}"></nav>
     <div th:replace="~{fragments/layout :: alerts}"></div>
 
     <div class="container-fluid px-4 py-4">
-        
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-2 border-bottom">
+
+        <!-- Header: Page Title and Primary Action Buttons -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
             <div>
-                <h2 class="fw-bold text-dark mb-1">Network Device Inventory</h2>
-                <p class="text-muted mb-0">Hardware devices and IP address allocations across campus laboratories</p>
+                <h2 class="fw-bold text-white mb-1" style="font-size: 1.4rem;">Network Device Inventory</h2>
+                <p class="text-secondary small mb-0">Hardware devices and IP address allocations across campus laboratories</p>
             </div>
+            <!-- Primary Action Buttons -->
             <div class="mt-3 mt-md-0 d-flex gap-2">
-                <a th:href="@{/devices/new}" class="btn btn-primary">+ Register New Device</a>
-                <a th:href="@{/ip-management}" class="btn btn-outline-secondary">IP Status Checker</a>
+                <a th:href="@{/devices/new}" class="btn btn-electric-blue">
+                    + Register New Device
+                </a>
+                <a th:href="@{/ip-management}" class="btn btn-glass">
+                    IP Status Checker
+                </a>
             </div>
         </div>
 
-        <!-- Comprehensive Search & Filter Bar (Pure HTML GET Form - No JavaScript) -->
-        <div class="card p-3 mb-4 border-0 shadow-sm">
-            <form th:action="@{/devices}" method="get" class="row g-2 align-items-center">
-                <!-- Search Keyword -->
-                <div class="col-12 col-md-3">
-                    <label for="keyword" class="visually-hidden">Search Keyword</label>
-                    <input type="text" id="keyword" name="keyword" th:value="${keyword}" 
+        <!-- Filter Bar: Bare inputs directly on page background (no card wrapper) -->
+        <div class="mb-4">
+            <form th:action="@{/devices}" method="get" class="d-flex flex-wrap gap-2 align-items-center">
+
+                <!-- Keyword Search -->
+                <div style="flex: 1; min-width: 200px; max-width: 320px;">
+                    <input type="text" name="keyword" th:value="${keyword}"
                            class="form-control" placeholder="Search Name, IP, or MAC...">
                 </div>
 
-                <!-- Device Type Filter -->
-                <div class="col-12 col-sm-6 col-md-2">
-                    <label for="deviceType" class="visually-hidden">Device Type</label>
-                    <select id="deviceType" name="deviceType" class="form-select">
+                <!-- Drop-down: Types -->
+                <div style="min-width: 160px;">
+                    <select name="deviceType" class="form-select">
                         <option value="">-- All Types --</option>
-                        <option th:each="t : ${deviceTypes}" 
-                                th:value="${t}" 
+                        <option th:each="t : ${deviceTypes}"
+                                th:value="${t}"
                                 th:text="${t}"
                                 th:selected="${t == selectedType}">
                         </option>
                     </select>
                 </div>
 
-                <!-- Status Filter -->
-                <div class="col-12 col-sm-6 col-md-2">
-                    <label for="status" class="visually-hidden">Status</label>
-                    <select id="status" name="status" class="form-select">
+                <!-- Drop-down: Statuses -->
+                <div style="min-width: 160px;">
+                    <select name="status" class="form-select">
                         <option value="">-- All Statuses --</option>
-                        <option value="ACTIVE" th:selected="${selectedStatus == 'ACTIVE'}">ACTIVE</option>
-                        <option value="INACTIVE" th:selected="${selectedStatus == 'INACTIVE'}">INACTIVE</option>
+                        <option value="ACTIVE" th:selected="${selectedStatus == 'ACTIVE'}">ACTIVE (Online)</option>
+                        <option value="INACTIVE" th:selected="${selectedStatus == 'INACTIVE'}">INACTIVE (Offline)</option>
                     </select>
                 </div>
 
-                <!-- Lab Filter -->
-                <div class="col-12 col-md-3">
-                    <label for="labId" class="visually-hidden">Laboratory</label>
-                    <select id="labId" name="labId" class="form-select">
-                        <option value="">-- All Laboratories --</option>
-                        <option th:each="l : ${labs}" 
-                                th:value="${l.id}" 
+                <!-- Drop-down: Labs -->
+                <div style="min-width: 180px;">
+                    <select name="labId" class="form-select">
+                        <option value="">-- Lab --</option>
+                        <option th:each="l : ${labs}"
+                                th:value="${l.id}"
                                 th:text="${l.labNumber} + ' - ' + ${l.labName}"
                                 th:selected="${l.id == selectedLabId}">
                         </option>
                     </select>
                 </div>
 
-                <!-- Submit / Clear Buttons -->
-                <div class="col-12 col-md-2 d-flex gap-2">
-                    <button type="submit" class="btn btn-primary flex-grow-1">Search</button>
-                    <a th:href="@{/devices}" class="btn btn-outline-secondary">Clear</a>
+                <!-- Action Buttons -->
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-electric-blue">Filter</button>
+                    <a th:href="@{/devices}" class="btn btn-glass">Reset</a>
                 </div>
             </form>
         </div>
 
-        <!-- Device List Table -->
-        <div class="card table-card shadow-sm">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <span class="h6 mb-0 fw-bold">Device &amp; IP Allocation Table</span>
-                <span class="badge bg-secondary" th:text="${#lists.size(devices)} + ' Devices Listed'">0 Devices Listed</span>
+        <!-- Three Key Metric Cards -->
+        <div class="row g-3 mb-4">
+
+            <!-- Metric Card 1: Total Devices -->
+            <div class="col-12 col-md-4">
+                <div class="card metric-card p-3 h-100">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="metric-label">Total Devices</span>
+                        <div class="metric-icon" style="background: rgba(139, 148, 158, 0.15); color: #8b949e; font-size: 1rem;">
+                            🖥️
+                        </div>
+                    </div>
+                    <div class="metric-number" th:text="${totalDevices}">0</div>
+                    <div class="mt-2">
+                        <a th:href="@{/devices}" class="small text-info text-decoration-none">All Devices →</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metric Card 2: Active Online (green bottom border) -->
+            <div class="col-12 col-md-4">
+                <div class="card metric-card card-active-glow p-3 h-100">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="metric-label">Active Online</span>
+                        <span class="indicator-pulse-green"></span>
+                    </div>
+                    <div class="metric-number" th:text="${activeDevices}">0</div>
+                    <div class="mt-2 small text-secondary"
+                         th:text="${totalDevices > 0 ? #numbers.formatDecimal(activeDevices * 100.0 / totalDevices, 1, 1) + '% online' : '0.0% online'}">
+                        0.0% online
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metric Card 3: Inactive Offline (red bottom border) -->
+            <div class="col-12 col-md-4">
+                <div class="card metric-card card-inactive-glow p-3 h-100">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="metric-label">Inactive Offline</span>
+                        <span class="indicator-pulse-red"></span>
+                    </div>
+                    <div class="metric-number" th:text="${inactiveDevices}">0</div>
+                    <div class="mt-2 small text-secondary"
+                         th:text="${totalDevices > 0 ? #numbers.formatDecimal(inactiveDevices * 100.0 / totalDevices, 1, 1) + '% offline' : '0.0% offline'}">
+                        0.0% offline
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Device & IP Allocation Table -->
+        <div class="card table-card shadow">
+            <div class="card-header">
+                <span class="fw-semibold">Device &amp; IP Allocation Table</span>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
@@ -97,9 +151,9 @@
                         <tbody>
                             <tr th:each="dev : ${devices}">
                                 <td class="fw-semibold">
-                                    <a th:href="@{/devices/view/{id}(id=${dev.id})}" class="text-decoration-none text-dark" th:text="${dev.deviceName}">
-                                        Cisco Router
-                                    </a>
+                                    <a th:href="@{/devices/view/{id}(id=${dev.id})}"
+                                       class="text-decoration-none text-light"
+                                       th:text="${dev.deviceName}">Core-Router-01</a>
                                 </td>
                                 <td>
                                     <span class="badge-type" th:text="${dev.deviceType}">ROUTER</span>
@@ -108,30 +162,25 @@
                                     <span class="font-mono ip-badge" th:text="${dev.ipAddress}">192.168.1.1</span>
                                 </td>
                                 <td>
-                                    <span class="font-mono small text-muted" th:text="${dev.macAddress}">00:1A:2B:3C:4D:5E</span>
+                                    <span class="font-mono small text-secondary" th:text="${dev.macAddress}">00:1A:2B:3C:4D:5E</span>
                                 </td>
-                                <td th:text="${dev.lab != null ? dev.lab.labNumber : 'N/A'}">LAB-301</td>
-                                <td class="small text-muted" th:text="${dev.lab != null && dev.lab.department != null ? dev.lab.department.code : 'N/A'}">CSE</td>
+                                <td th:text="${dev.lab != null ? dev.lab.labNumber : 'Unassigned'}">LAB-301</td>
+                                <td th:text="${dev.lab != null and dev.lab.department != null ? dev.lab.department.code : '-'}">CSE</td>
                                 <td>
                                     <span th:if="${dev.status == 'ACTIVE'}" class="badge-active">ACTIVE</span>
-                                    <span th:if="${dev.status != 'ACTIVE'}" class="badge-inactive">INACTIVE</span>
+                                    <span th:if="${dev.status != 'ACTIVE'}" class="badge-inactive">OFFLINE</span>
                                 </td>
                                 <td>
-                                    <div class="d-flex gap-2">
-                                        <a th:href="@{/devices/view/{id}(id=${dev.id})}" class="btn btn-sm btn-outline-info" title="View Details">View</a>
-                                        <a th:href="@{/devices/edit/{id}(id=${dev.id})}" class="btn btn-sm btn-outline-primary">Edit</a>
-                                        
-                                        <!-- Native HTML POST form for deletion (No JavaScript) -->
-                                        <form th:action="@{/devices/delete/{id}(id=${dev.id})}" method="post" class="inline-form">
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                                        </form>
+                                    <div class="d-flex gap-2 flex-wrap">
+                                        <a th:href="@{/devices/view/{id}(id=${dev.id})}" class="btn btn-sm btn-action">View All Devices</a>
+                                        <a th:href="@{/ip-management}" class="btn btn-sm btn-glass">IP Status Checker</a>
                                     </div>
                                 </td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(devices)}">
-                                <td colspan="8" class="text-center py-5 text-muted">
-                                    <p class="mb-2">No matching network devices found.</p>
-                                    <a th:href="@{/devices/new}" class="btn btn-sm btn-primary">+ Register First Device</a>
+                                <td colspan="8" class="text-center py-5 text-secondary">
+                                    <p class="mb-2">No network devices match the active search criteria.</p>
+                                    <a th:href="@{/devices/new}" class="btn btn-sm btn-electric-blue">+ Register First Device</a>
                                 </td>
                             </tr>
                         </tbody>
@@ -142,6 +191,7 @@
 
     </div>
 
+    <!-- Footer -->
     <footer th:replace="~{fragments/layout :: footer}"></footer>
 
 </body>
