@@ -1,29 +1,23 @@
-# Stage 1: Build the Spring Boot application using Maven
-FROM eclipse-temurin:17-jdk-alpine AS builder
+# Stage 1: Build with Maven 3.9 and Java 17
+FROM maven:3.9.9-eclipse-temurin-17-alpine AS builder
 WORKDIR /app
 
-# Copy Maven files
 COPY pom.xml .
 COPY .mvn .mvn
 COPY mvnw .
 RUN chmod +x ./mvnw
 
-# Copy source code and build
 COPY src src
 RUN ./mvnw clean package -DskipTests
 
-# Stage 2: Lightweight JRE runtime container
+# Stage 2: Lightweight Java 17 runtime
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
-# Copy built JAR from builder stage
 COPY --from=builder /app/target/*.jar app.jar
 
-# Expose HTTP port (Render, Railway, Heroku dynamically assign PORT)
 ENV PORT=8080
+ENV JAVA_TOOL_OPTIONS="-Xmx300m -Xms256m"
 EXPOSE 8080
 
-# Run Spring Boot application. Railway and similar hosts can override
-# SPRING_PROFILES_ACTIVE and PORT through environment variables.
-ENV SPRING_PROFILES_ACTIVE=prod
-ENTRYPOINT ["sh", "-c", "java -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE} -Dserver.port=${PORT} -jar app.jar"]
+ENTRYPOINT ["sh", "-c", "java $JAVA_TOOL_OPTIONS -Dserver.port=${PORT:-8080} -jar app.jar"]
