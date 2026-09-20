@@ -26,6 +26,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/js/**",
                         "/images/**",
                         "/favicon.ico",
+                        "/h2-console/**",
                         "/error"
                 );
     }
