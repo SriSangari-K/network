@@ -2,7 +2,7 @@
 
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.3-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![Java](https://img.shields.io/badge/Java-17%20%7C%2021%20%7C%2024-orange.svg)](https://www.oracle.com/java/)
-[![Database](https://img.shields.io/badge/Database-MySQL%20%7C%20H2-blue.svg)](https://www.mysql.com/)
+[![Database](https://img.shields.io/badge/Database-MySQL-blue.svg)](https://www.mysql.com/)
 [![Frontend](https://img.shields.io/badge/Frontend-HTML%20%2B%20CSS%20%2B%20Bootstrap%20(No%20JS)-purple.svg)](#frontend-architecture)
 [![License](https://img.shields.io/badge/Project-Academic%202nd%20Year-success.svg)](#)
 
@@ -24,7 +24,7 @@ A complete, production-grade **Network Device and IP Address Management System (
   - Standalone IP Availability & Conflict Audit utility.
   - Hardware MAC address format validation (`00:1A:2B:3C:4D:5E`).
 - **Secure Admin Authentication**: BCrypt password hashing and session-based route interception.
-- **Out-of-the-Box Runnability**: Supports MySQL by default, with an instant H2 in-memory profile for evaluation on machines without MySQL.
+- **MySQL-Only Persistence**: Uses MySQL for local development, testing, and deployment.
 
 ---
 
@@ -72,8 +72,8 @@ A complete, production-grade **Network Device and IP Address Management System (
 | Component | Technology | Description |
 |---|---|---|
 | **Backend Framework** | Spring Boot 3.3.3 | MVC, Dependency Injection, Auto-configuration |
-| **Persistence / ORM** | Spring Data JPA / Hibernate | Object-Relational Mapping with MySQL/H2 Dialects |
-| **Database** | MySQL 8.x (Default) / H2 (Fallback) | Relational Database storage |
+| **Persistence / ORM** | Spring Data JPA / Hibernate | Object-Relational Mapping with MySQL dialect |
+| **Database** | MySQL 8.x | Relational database storage |
 | **Security** | BCrypt / Servlet Session Filter | Password hashing and protected route interception |
 | **Frontend UI** | HTML5, CSS3, Bootstrap 5 | Pure markup and styling (**Zero JavaScript**) |
 | **Template Engine** | Thymeleaf | Server-side template rendering |
@@ -83,24 +83,7 @@ A complete, production-grade **Network Device and IP Address Management System (
 
 ## 🚀 Quick Start & Run Instructions
 
-### Option A: Instant Run with H2 (No MySQL Setup Required)
-Ideal for testing immediately without installing or configuring MySQL:
-
-```bash
-# Using Maven:
-mvn spring-boot:run -Dspring-boot.run.profiles=h2
-
-# Or using Maven Wrapper (Unix/Mac):
-./mvnw spring-boot:run -Dspring-boot.run.profiles=h2
-
-# Or using Maven Wrapper (Windows):
-mvnw.cmd spring-boot:run -Dspring-boot.run.profiles=h2
-```
-*H2 web console is available at `http://localhost:8080/h2-console` (JDBC URL: `jdbc:h2:mem:college_network_db`, User: `sa`, Password: empty).*
-
----
-
-### Option B: Run with MySQL (Production Setup)
+### Run with MySQL
 
 #### Step 1: Start MySQL and Create Database
 Open MySQL Workbench or MySQL CLI:
@@ -227,7 +210,7 @@ mvn test
 The test suite includes:
 1. `IpManagementServiceTest`: Validates IPv4 regex, octet boundary conditions (0-255), MAC address formats, and duplicate IP collision queries.
 2. `DeviceServiceTest`: Verifies device saving, duplicate IP rejection, and invalid input exceptions.
-3. `NetworkManagementApplicationTests`: Verifies full Spring Boot application context initialization with H2 in-memory profile.
+3. `NetworkManagementApplicationTests`: Verifies full Spring Boot application context initialization with MySQL configuration.
 
 ---
 
@@ -281,7 +264,6 @@ network-mgmt-system/
 │   │   │           └── IpRestController.java
 │   │   └── resources/
 │   │       ├── application.properties             # Primary MySQL config
-│   │       ├── application-h2.properties          # In-memory test config
 │   │       ├── schema.sql                         # Raw SQL DDL (5 tables)
 │   │       ├── data.sql                           # Initial SQL seed data
 │   │       ├── static/css/
